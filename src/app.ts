@@ -20,6 +20,7 @@ interface CreateAppOptions {
   store?: LedgerStore;
   pricingPolicy?: PricingPolicy;
   settlementProvider?: SettlementProvider;
+  webhookSecret?: string;
   ratePerSecond?: number;
 }
 
@@ -80,7 +81,27 @@ export function createApp(options: CreateAppOptions = {}) {
   });
 
   app.use(createViewerSessionRouter(store, pricingPolicy));
-  app.use(createOwncastWebhookRouter(store, sessions));
+  app.use(
+    createOwncastWebhookRouter(store, sessions, {
+      webhookSecret: options.webhookSecret
+    })
+  );
+
+  app.use(
+    (
+      error: unknown,
+      _req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ) => {
+      void next;
+      console.error(error);
+      res.status(500).json({
+        ok: false,
+        error: "internal_server_error"
+      });
+    }
+  );
 
   return app;
 }

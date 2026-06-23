@@ -13,12 +13,22 @@ import type { SessionService } from "../services/session-service.js";
 
 export function createOwncastWebhookRouter(
   store: LedgerStore,
-  sessions: SessionService
+  sessions: SessionService,
+  options: { webhookSecret?: string } = {}
 ) {
   const router = Router();
 
   router.post(["/webhook", "/webhooks/owncast"], async (req, res, next) => {
     try {
+      if (options.webhookSecret) {
+        const header = req.header("x-payflow-webhook-secret");
+
+        if (header !== options.webhookSecret) {
+          res.status(401).json({ ok: false, error: "invalid_webhook_secret" });
+          return;
+        }
+      }
+
       const webhook = parseOwncastWebhook(req.body);
       const eventId = getWebhookEventId(webhook);
 

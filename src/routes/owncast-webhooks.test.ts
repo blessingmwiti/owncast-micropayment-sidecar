@@ -138,4 +138,24 @@ describe("Owncast webhook receiver", () => {
       error: "invalid_owncast_webhook"
     });
   });
+
+  it("requires the configured webhook secret", async () => {
+    const app = createApp({ webhookSecret: "secret-value" });
+    const payload = {
+      id: "event-1",
+      type: "STREAM_STARTED",
+      eventData: {
+        id: "stream-1",
+        timestamp: "2026-06-23T18:00:00.000Z"
+      }
+    };
+
+    await request(app).post("/webhook").send(payload).expect(401);
+
+    await request(app)
+      .post("/webhook")
+      .set("x-payflow-webhook-secret", "secret-value")
+      .send(payload)
+      .expect(202);
+  });
 });

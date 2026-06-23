@@ -22,6 +22,7 @@ const pricingAgent = new PricingAgent(
 const app = createApp({
   store: new JsonLedgerStore(config.LEDGER_FILE),
   pricingPolicy: pricingAgent,
+  webhookSecret: config.OWNCAST_WEBHOOK_SECRET,
   settlementProvider:
     config.SETTLEMENT_PROVIDER === "circle-gateway"
       ? new CircleGatewaySettlementProvider({
