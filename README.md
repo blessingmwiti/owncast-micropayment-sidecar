@@ -55,6 +55,48 @@ Arc testnet
   -> settles USDC to creator wallet
 ```
 
+## Current Build
+
+The `dev` branch has the working local spine:
+
+- Express/TypeScript sidecar.
+- Static viewer entry page at `http://localhost:4000/`.
+- Creator dashboard at `http://localhost:4000/dashboard.html`.
+- Owncast webhook receiver at `POST /webhook`.
+- Viewer pre-authorization binding at `POST /session/start`.
+- JSON ledger for sessions, authorizations, processed webhook IDs, and settlements.
+- Deterministic pricing agent backed by Owncast `/api/status`.
+- Dry-run settlement by default, with a Circle Gateway provider wired behind config.
+
+## Local Run
+
+```bash
+npm install
+cp .env.example .env
+npm run owncast:up
+npm run dev
+```
+
+Useful URLs:
+
+- Viewer entry: `http://localhost:4000/`
+- Creator dashboard: `http://localhost:4000/dashboard.html`
+- Sidecar health: `http://localhost:4000/health`
+- Owncast: `http://localhost:8080`
+- Owncast admin: `http://localhost:8080/admin`
+
+Run checks:
+
+```bash
+npm run check
+```
+
+## Settlement Modes
+
+`SETTLEMENT_PROVIDER=dry-run` is the default. It records deterministic local settlement IDs and lets us prove the metering, ledger, dashboard, and webhook flow before using real testnet funds.
+
+`SETTLEMENT_PROVIDER=circle-gateway` uses Circle's x402 batching SDK and expects stored x402 payment payloads/requirements from the viewer authorization flow. This is the path to turn on after Circle project, wallet, faucet, and live signing are configured.
+
 ## Proof Plan
 
 The first proof is not a perfect payments platform. It is a short, inspectable flow:
