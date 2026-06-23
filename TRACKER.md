@@ -1,0 +1,121 @@
+# Payflow Build Tracker
+
+This is the chronological build plan. We will mark items complete as we finish them.
+
+## 0. Project Framing
+
+- [x] Read existing `INSTRUCTIONS.md`.
+- [x] Review the Lepton hackathon brief and judging criteria.
+- [x] Tighten the idea around RFB 04 Streaming & Continuous Payments.
+- [x] Create a concise public-facing `README.md`.
+- [x] Create this implementation tracker.
+
+## 1. Repo and Environment
+
+- [ ] Initialize the project repository.
+- [ ] Choose the app structure: single Node/TypeScript service first, dashboard second.
+- [ ] Install Node.js dependencies.
+- [ ] Add `.env.example` with non-secret configuration names.
+- [ ] Add basic lint, typecheck, and dev scripts.
+- [ ] Add secret hygiene: `.gitignore`, no real keys, no private hostnames.
+
+## 2. Arc and Circle Setup
+
+- [ ] Install and verify ARC CLI.
+- [ ] Install and verify Circle CLI.
+- [ ] Create or select Circle project for Arc testnet.
+- [ ] Create creator wallet.
+- [ ] Create at least one test viewer wallet.
+- [ ] Fund test wallets with testnet USDC.
+- [ ] Confirm Circle Gateway/x402 SDK flow against current docs.
+
+## 3. Owncast Setup
+
+- [ ] Run Owncast locally with Docker.
+- [ ] Change default admin credentials.
+- [ ] Configure a stream key.
+- [ ] Start a test stream with OBS or FFmpeg.
+- [ ] Register the sidecar webhook endpoint.
+- [ ] Confirm test webhook delivery.
+- [ ] Verify actual `USER_JOINED`, `USER_PARTED`, `STREAM_STARTED`, and `STREAM_STOPPED` payload shapes.
+
+## 4. Sidecar MVP
+
+- [ ] Scaffold Express/TypeScript service.
+- [ ] Add health endpoint.
+- [ ] Add webhook receiver.
+- [ ] Add typed event parsing and validation.
+- [ ] Add idempotency keys for webhook events.
+- [ ] Add durable session store.
+- [ ] Add session ledger model.
+- [ ] Implement `USER_JOINED` handling.
+- [ ] Implement `USER_PARTED` handling.
+- [ ] Implement `STREAM_STOPPED` open-session settlement.
+- [ ] Add tests for session duration and duplicate webhooks.
+
+## 5. Viewer Authorization Flow
+
+- [ ] Build minimal viewer entry page.
+- [ ] Show active stream state and current rate.
+- [ ] Connect viewer wallet.
+- [ ] Create payment authorization using Circle/x402 tooling.
+- [ ] Bind Owncast viewer/session identity to wallet authorization.
+- [ ] Enforce spending cap and authorization expiry.
+- [ ] Redirect or embed the Owncast stream after authorization.
+
+## 6. Settlement Core
+
+- [ ] Integrate Circle's `@circle-fin/x402-batching` SDK.
+- [ ] Settle a fixed test payment end to end.
+- [ ] Convert watched seconds into USDC minor units safely.
+- [ ] Settle a real viewer session on `USER_PARTED`.
+- [ ] Record settlement result and Gateway transaction data.
+- [ ] Prevent double settlement for repeated events.
+- [ ] Add failure states and retry strategy.
+
+## 7. Pricing Agent
+
+- [ ] Define creator policy: base rate, min rate, max rate, surge rules.
+- [ ] Implement simple deterministic pricing policy.
+- [ ] Poll Owncast viewer count.
+- [ ] Log rate decisions with rationale.
+- [ ] Lock each viewer session to the visible rate they accepted.
+- [ ] Add optional LLM-backed rationale after deterministic policy works.
+- [ ] Surface agent decisions in the dashboard.
+
+## 8. Creator Dashboard
+
+- [ ] Show stream status and viewer count.
+- [ ] Show current rate and agent rationale.
+- [ ] Show active sessions.
+- [ ] Show settled sessions and USDC totals.
+- [ ] Show failed/retryable settlements.
+- [ ] Show creator wallet balance if API access permits.
+
+## 9. Demo Hardening
+
+- [ ] Run one complete local stream with one viewer wallet.
+- [ ] Run one complete stream with 2-3 real test viewers.
+- [ ] Capture metrics: sessions, wallets, USDC settled, average duration, agent decisions.
+- [ ] Deploy sidecar to a public URL.
+- [ ] Verify webhook delivery against deployed sidecar.
+- [ ] Record a sub-3-minute demo video.
+- [ ] Submit early with repo, video, and live URL if available.
+
+## 10. Stretch: Mastodon Adapter
+
+- [ ] Confirm current Mastodon donation-campaign API shape.
+- [ ] Add campaign endpoint backed by the same settlement core.
+- [ ] Add donation page.
+- [ ] Settle one test donation.
+- [ ] Include it as a brief stretch segment in the demo only after Owncast works.
+
+## 11. Production Follow-Through
+
+- [ ] Replace demo storage with production database migrations.
+- [ ] Add authentication for creator dashboard.
+- [ ] Add observability: structured logs, metrics, error reporting.
+- [ ] Add rate-limit and abuse protections.
+- [ ] Add reconciliation job for unsettled sessions.
+- [ ] Add deployment documentation.
+- [ ] Write post-hackathon roadmap.
