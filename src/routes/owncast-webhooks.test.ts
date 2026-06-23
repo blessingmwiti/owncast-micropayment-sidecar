@@ -70,7 +70,19 @@ describe("Owncast webhook receiver", () => {
     expect(session).toMatchObject({
       watchedSeconds: 42,
       amountUSDC: "0.042000",
-      status: "settlement_pending"
+      status: "settled",
+      settled: true
+    });
+
+    const snapshot = await store.snapshot();
+    expect(snapshot.settlements).toHaveLength(1);
+    expect(snapshot.settlements[0]).toMatchObject({
+      viewerUserId: "viewer-1",
+      streamId: "stream-1",
+      provider: "dry-run",
+      status: "settled",
+      amountUSDC: "0.042000",
+      amountUnits: "42000"
     });
   });
 
@@ -108,7 +120,8 @@ describe("Owncast webhook receiver", () => {
       partedAt: "2026-06-23T18:01:00.000Z",
       watchedSeconds: 60,
       amountUSDC: "0.060000",
-      status: "settlement_pending"
+      status: "settled",
+      settled: true
     });
   });
 

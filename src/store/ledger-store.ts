@@ -3,6 +3,7 @@ import { dirname } from "node:path";
 
 import type {
   LedgerSnapshot,
+  SettlementRecord,
   ViewerAuthorization,
   ViewerSession
 } from "../domain/sessions.js";
@@ -12,6 +13,7 @@ export interface LedgerStore {
   markProcessedEvent(eventId: string): Promise<void>;
   upsertAuthorization(authorization: ViewerAuthorization): Promise<void>;
   getAuthorization(viewerUserId: string): Promise<ViewerAuthorization | undefined>;
+  appendSettlement(settlement: SettlementRecord): Promise<void>;
   upsertSession(session: ViewerSession): Promise<void>;
   getSession(viewerUserId: string): Promise<ViewerSession | undefined>;
   listOpenSessions(streamId?: string): Promise<ViewerSession[]>;
@@ -21,6 +23,7 @@ export interface LedgerStore {
 const emptySnapshot = (): LedgerSnapshot => ({
   processedEventIds: [],
   authorizations: [],
+  settlements: [],
   sessions: []
 });
 
@@ -81,6 +84,12 @@ export class JsonLedgerStore implements LedgerStore {
     );
   }
 
+  async appendSettlement(settlement: SettlementRecord): Promise<void> {
+    await this.update((snapshot) => {
+      snapshot.settlements.push(settlement);
+    });
+  }
+
   async getSession(viewerUserId: string): Promise<ViewerSession | undefined> {
     const snapshot = await this.readSnapshot();
     return snapshot.sessions.find((session) => session.viewerUserId === viewerUserId);
@@ -134,6 +143,7 @@ export class JsonLedgerStore implements LedgerStore {
 export class InMemoryLedgerStore implements LedgerStore {
   private readonly processedEventIds = new Set<string>();
   private readonly authorizations = new Map<string, ViewerAuthorization>();
+  private readonly settlements: SettlementRecord[] = [];
   private readonly sessions = new Map<string, ViewerSession>();
 
   async hasProcessedEvent(eventId: string): Promise<boolean> {
@@ -158,6 +168,10 @@ export class InMemoryLedgerStore implements LedgerStore {
     return this.authorizations.get(viewerUserId);
   }
 
+  async appendSettlement(settlement: SettlementRecord): Promise<void> {
+    this.settlements.push(settlement);
+  }
+
   async getSession(viewerUserId: string): Promise<ViewerSession | undefined> {
     return this.sessions.get(viewerUserId);
   }
@@ -175,6 +189,7 @@ export class InMemoryLedgerStore implements LedgerStore {
     return {
       processedEventIds: [...this.processedEventIds],
       authorizations: [...this.authorizations.values()],
+      settlements: [...this.settlements],
       sessions: [...this.sessions.values()]
     };
   }

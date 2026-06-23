@@ -2,7 +2,8 @@ export type SessionStatus =
   | "watching"
   | "parted"
   | "settled"
-  | "settlement_pending";
+  | "settlement_pending"
+  | "settlement_failed";
 
 export interface ViewerSession {
   viewerUserId: string;
@@ -25,6 +26,7 @@ export interface ViewerSession {
 export interface LedgerSnapshot {
   processedEventIds: string[];
   authorizations: ViewerAuthorization[];
+  settlements: SettlementRecord[];
   sessions: ViewerSession[];
 }
 
@@ -35,6 +37,19 @@ export interface ViewerAuthorization {
   spendingCapUSDC: string;
   acceptedRatePerSecond: number;
   expiresAt: string;
+  createdAt: string;
+}
+
+export interface SettlementRecord {
+  id: string;
+  viewerUserId: string;
+  streamId: string;
+  provider: "dry-run" | "circle-gateway";
+  status: "settled" | "failed";
+  amountUSDC: string;
+  amountUnits: string;
+  transactionId?: string;
+  error?: string;
   createdAt: string;
 }
 

@@ -3,6 +3,11 @@ import express from "express";
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
 import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
 import {
+  DryRunSettlementProvider,
+  SettlementService,
+  type SettlementProvider
+} from "./services/settlement-service.js";
+import {
   SessionService,
   StaticPricingPolicy,
   type PricingPolicy
@@ -12,6 +17,7 @@ import { InMemoryLedgerStore, type LedgerStore } from "./store/ledger-store.js";
 interface CreateAppOptions {
   store?: LedgerStore;
   pricingPolicy?: PricingPolicy;
+  settlementProvider?: SettlementProvider;
   ratePerSecond?: number;
 }
 
@@ -28,7 +34,11 @@ export function createApp(options: CreateAppOptions = {}) {
   const store = options.store ?? new InMemoryLedgerStore();
   const pricingPolicy =
     options.pricingPolicy ?? new StaticPricingPolicy(options.ratePerSecond ?? 0.001);
-  const sessions = new SessionService(store, pricingPolicy);
+  const settlements = new SettlementService(
+    store,
+    options.settlementProvider ?? new DryRunSettlementProvider()
+  );
+  const sessions = new SessionService(store, pricingPolicy, settlements);
 
   app.use(express.json());
 

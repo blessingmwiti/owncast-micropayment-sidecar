@@ -3,6 +3,7 @@ import {
   type ViewerSession
 } from "../domain/sessions.js";
 import type { LedgerStore } from "../store/ledger-store.js";
+import type { SettlementService } from "./settlement-service.js";
 
 export interface PricingPolicy {
   currentRatePerSecond(): Promise<number>;
@@ -19,7 +20,8 @@ export class StaticPricingPolicy implements PricingPolicy {
 export class SessionService {
   constructor(
     private readonly store: LedgerStore,
-    private readonly pricingPolicy: PricingPolicy
+    private readonly pricingPolicy: PricingPolicy,
+    private readonly settlements?: SettlementService
   ) {}
 
   async startSession(input: {
@@ -80,7 +82,7 @@ export class SessionService {
     };
 
     await this.store.upsertSession(updated);
-    return updated;
+    return this.settlements ? this.settlements.settleSession(updated) : updated;
   }
 
   async markOpenSessionsParted(input: {

@@ -65,13 +65,13 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 6. Settlement Core
 
-- [ ] Integrate Circle's `@circle-fin/x402-batching` SDK.
+- [x] Integrate Circle's `@circle-fin/x402-batching` SDK.
 - [ ] Settle a fixed test payment end to end.
-- [ ] Convert watched seconds into USDC minor units safely.
-- [ ] Settle a real viewer session on `USER_PARTED`.
+- [x] Convert watched seconds into USDC minor units safely.
+- [x] Settle a real viewer session on `USER_PARTED`.
 - [ ] Record settlement result and Gateway transaction data.
-- [ ] Prevent double settlement for repeated events.
-- [ ] Add failure states and retry strategy.
+- [x] Prevent double settlement for repeated events.
+- [x] Add failure states and retry strategy.
 
 ## 7. Pricing Agent
 
