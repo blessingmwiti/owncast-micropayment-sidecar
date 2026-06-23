@@ -7,11 +7,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "owncast:up": "docker compose up -d owncast",
     "owncast:down": "docker compose down",
     "owncast:logs": "docker compose logs -f owncast",
+    "demo:dry-run": "bash scripts/demo-dry-run.sh",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
