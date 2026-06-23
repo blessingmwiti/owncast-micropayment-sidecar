@@ -31,7 +31,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 3. Owncast Setup
 
-- [ ] Run Owncast locally with Docker.
+- [x] Run Owncast locally with Docker.
 - [ ] Change default admin credentials.
 - [ ] Configure a stream key.
 - [ ] Start a test stream with OBS or FFmpeg.

@@ -170,7 +170,7 @@ npx tsx generate-wallets.mts
 ```bash
 mkdir owncast && cd owncast
 docker run -v $PWD/data:/app/data -p 8080:8080 -p 1935:1935 \
-  ghcr.io/owncast/owncast:latest
+  owncast/owncast:latest
 ```
 
 Owncast admin UI: http://localhost:8080/admin
