@@ -117,5 +117,5 @@ This is the chronological build plan. We will mark items complete as we finish t
 - [ ] Add observability: structured logs, metrics, error reporting.
 - [ ] Add rate-limit and abuse protections.
 - [ ] Add reconciliation job for unsettled sessions.
-- [ ] Add deployment documentation.
+- [x] Add deployment documentation.
 - [ ] Write post-hackathon roadmap.
