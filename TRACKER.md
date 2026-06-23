@@ -12,12 +12,12 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 1. Repo and Environment
 
-- [ ] Initialize the project repository.
-- [ ] Choose the app structure: single Node/TypeScript service first, dashboard second.
-- [ ] Install Node.js dependencies.
-- [ ] Add `.env.example` with non-secret configuration names.
-- [ ] Add basic lint, typecheck, and dev scripts.
-- [ ] Add secret hygiene: `.gitignore`, no real keys, no private hostnames.
+- [x] Initialize the project repository.
+- [x] Choose the app structure: single Node/TypeScript service first, dashboard second.
+- [x] Install Node.js dependencies.
+- [x] Add `.env.example` with non-secret configuration names.
+- [x] Add basic lint, typecheck, and dev scripts.
+- [x] Add secret hygiene: `.gitignore`, no real keys, no private hostnames.
 
 ## 2. Arc and Circle Setup
 
@@ -41,8 +41,8 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 4. Sidecar MVP
 
-- [ ] Scaffold Express/TypeScript service.
-- [ ] Add health endpoint.
+- [x] Scaffold Express/TypeScript service.
+- [x] Add health endpoint.
 - [ ] Add webhook receiver.
 - [ ] Add typed event parsing and validation.
 - [ ] Add idempotency keys for webhook events.
