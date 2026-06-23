@@ -1,0 +1,11 @@
+services:
+  owncast:
+    image: owncast/owncast:latest
+    ports:
+      - "8080:8080"
+      - "1935:1935"
+    volumes:
+      - owncast-data:/app/data
+
+volumes:
+  owncast-data:
