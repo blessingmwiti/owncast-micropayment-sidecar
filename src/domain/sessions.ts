@@ -15,6 +15,8 @@ export interface ViewerSession {
   authorizationId?: string;
   spendingCapUSDC?: string;
   authorizationExpiresAt?: string;
+  x402PaymentPayload?: Record<string, unknown>;
+  x402PaymentRequirements?: Record<string, unknown>;
   ratePerSecond: number;
   amountUSDC?: string;
   status: SessionStatus;
@@ -36,6 +38,8 @@ export interface ViewerAuthorization {
   authorizationId: string;
   spendingCapUSDC: string;
   acceptedRatePerSecond: number;
+  x402PaymentPayload?: Record<string, unknown>;
+  x402PaymentRequirements?: Record<string, unknown>;
   expiresAt: string;
   createdAt: string;
 }

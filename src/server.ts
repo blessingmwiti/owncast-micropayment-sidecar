@@ -4,6 +4,10 @@ import {
   createOwncastStatusFetcher,
   PricingAgent
 } from "./services/pricing-agent.js";
+import {
+  CircleGatewaySettlementProvider,
+  DryRunSettlementProvider
+} from "./services/settlement-service.js";
 import { JsonLedgerStore } from "./store/ledger-store.js";
 
 const pricingAgent = new PricingAgent(
@@ -17,7 +21,14 @@ const pricingAgent = new PricingAgent(
 
 const app = createApp({
   store: new JsonLedgerStore(config.LEDGER_FILE),
-  pricingPolicy: pricingAgent
+  pricingPolicy: pricingAgent,
+  settlementProvider:
+    config.SETTLEMENT_PROVIDER === "circle-gateway"
+      ? new CircleGatewaySettlementProvider({
+          gatewayUrl: config.CIRCLE_GATEWAY_URL,
+          apiKey: config.CIRCLE_API_KEY
+        })
+      : new DryRunSettlementProvider()
 });
 
 const rateLogInterval = setInterval(async () => {

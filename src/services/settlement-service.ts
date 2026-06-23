@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 
+import { BatchFacilitatorClient } from "@circle-fin/x402-batching/server";
 import { Decimal } from "decimal.js";
 
 import type { SettlementRecord, ViewerSession } from "../domain/sessions.js";
@@ -11,10 +12,13 @@ export interface SettlementProviderResult {
 }
 
 export interface SettlementProvider {
+  readonly provider: SettlementRecord["provider"];
   settle(session: ViewerSession, amountUnits: bigint): Promise<SettlementProviderResult>;
 }
 
 export class DryRunSettlementProvider implements SettlementProvider {
+  readonly provider = "dry-run";
+
   async settle(
     session: ViewerSession,
     amountUnits: bigint
@@ -22,6 +26,54 @@ export class DryRunSettlementProvider implements SettlementProvider {
     return {
       provider: "dry-run",
       transactionId: `dryrun_${session.viewerUserId}_${amountUnits.toString()}`
+    };
+  }
+}
+
+export class CircleGatewaySettlementProvider implements SettlementProvider {
+  readonly provider = "circle-gateway";
+  private readonly client: BatchFacilitatorClient;
+
+  constructor(options: { gatewayUrl: string; apiKey?: string }) {
+    this.client = new BatchFacilitatorClient({
+      url: options.gatewayUrl,
+      createAuthHeaders: options.apiKey
+        ? async () => {
+            const authorization = `Bearer ${options.apiKey}`;
+            return {
+              verify: { Authorization: authorization },
+              settle: { Authorization: authorization },
+              supported: { Authorization: authorization }
+            };
+          }
+        : undefined
+    });
+  }
+
+  async settle(
+    session: ViewerSession,
+    amountUnits: bigint
+  ): Promise<SettlementProviderResult> {
+    void amountUnits;
+
+    if (!session.x402PaymentPayload || !session.x402PaymentRequirements) {
+      throw new Error("Missing x402 payment payload or payment requirements");
+    }
+
+    type PaymentPayload = Parameters<BatchFacilitatorClient["settle"]>[0];
+    type PaymentRequirements = Parameters<BatchFacilitatorClient["settle"]>[1];
+    const response = await this.client.settle(
+      session.x402PaymentPayload as unknown as PaymentPayload,
+      session.x402PaymentRequirements as unknown as PaymentRequirements
+    );
+
+    if (!response.success) {
+      throw new Error(response.errorReason ?? "Circle Gateway settlement failed");
+    }
+
+    return {
+      provider: "circle-gateway",
+      transactionId: response.transaction
     };
   }
 }
@@ -86,7 +138,7 @@ export class SettlementService {
     } catch (error) {
       const settlement = this.toSettlementRecord(session, {
         amountUnits: session.amountUSDC ? usdcToUnits(session.amountUSDC) : 0n,
-        provider: "dry-run",
+        provider: this.provider.provider,
         status: "failed",
         error: error instanceof Error ? error.message : "Unknown settlement failure"
       });

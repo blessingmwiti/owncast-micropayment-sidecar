@@ -13,6 +13,7 @@ const envSchema = z.object({
     .string()
     .url()
     .default("https://gateway-api-testnet.circle.com"),
+  SETTLEMENT_PROVIDER: z.enum(["dry-run", "circle-gateway"]).default("dry-run"),
   CREATOR_WALLET_ADDRESS: z.string().optional(),
   ARC_TESTNET_RPC: z.string().url().optional(),
   LEDGER_FILE: z.string().default("data/ledger.json"),

@@ -54,6 +54,8 @@ export class SessionService {
       session.spendingCapUSDC = authorization.spendingCapUSDC;
       session.ratePerSecond = authorization.acceptedRatePerSecond;
       session.authorizationExpiresAt = authorization.expiresAt;
+      session.x402PaymentPayload = authorization.x402PaymentPayload;
+      session.x402PaymentRequirements = authorization.x402PaymentRequirements;
     }
 
     await this.store.upsertSession(session);

@@ -13,6 +13,8 @@ const sessionStartSchema = z.object({
   walletAddress: z.string().min(1),
   authorizationId: z.string().min(1).optional(),
   spendingCapUSDC: z.coerce.number().positive().max(100).default(1),
+  x402PaymentPayload: z.record(z.string(), z.unknown()).optional(),
+  x402PaymentRequirements: z.record(z.string(), z.unknown()).optional(),
   expiresAt: z.string().datetime().optional()
 });
 
@@ -34,6 +36,8 @@ export function createViewerSessionRouter(
         authorizationId: input.authorizationId ?? randomUUID(),
         spendingCapUSDC: input.spendingCapUSDC.toFixed(6),
         acceptedRatePerSecond,
+        x402PaymentPayload: input.x402PaymentPayload,
+        x402PaymentRequirements: input.x402PaymentRequirements,
         expiresAt,
         createdAt: new Date().toISOString()
       };
