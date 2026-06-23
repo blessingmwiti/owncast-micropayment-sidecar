@@ -1,11 +1,17 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-import type { LedgerSnapshot, ViewerSession } from "../domain/sessions.js";
+import type {
+  LedgerSnapshot,
+  ViewerAuthorization,
+  ViewerSession
+} from "../domain/sessions.js";
 
 export interface LedgerStore {
   hasProcessedEvent(eventId: string): Promise<boolean>;
   markProcessedEvent(eventId: string): Promise<void>;
+  upsertAuthorization(authorization: ViewerAuthorization): Promise<void>;
+  getAuthorization(viewerUserId: string): Promise<ViewerAuthorization | undefined>;
   upsertSession(session: ViewerSession): Promise<void>;
   getSession(viewerUserId: string): Promise<ViewerSession | undefined>;
   listOpenSessions(streamId?: string): Promise<ViewerSession[]>;
@@ -14,6 +20,7 @@ export interface LedgerStore {
 
 const emptySnapshot = (): LedgerSnapshot => ({
   processedEventIds: [],
+  authorizations: [],
   sessions: []
 });
 
@@ -48,6 +55,30 @@ export class JsonLedgerStore implements LedgerStore {
 
       snapshot.sessions.push(session);
     });
+  }
+
+  async upsertAuthorization(authorization: ViewerAuthorization): Promise<void> {
+    await this.update((snapshot) => {
+      const existingIndex = snapshot.authorizations.findIndex(
+        (item) => item.viewerUserId === authorization.viewerUserId
+      );
+
+      if (existingIndex >= 0) {
+        snapshot.authorizations[existingIndex] = authorization;
+        return;
+      }
+
+      snapshot.authorizations.push(authorization);
+    });
+  }
+
+  async getAuthorization(
+    viewerUserId: string
+  ): Promise<ViewerAuthorization | undefined> {
+    const snapshot = await this.readSnapshot();
+    return snapshot.authorizations.find(
+      (authorization) => authorization.viewerUserId === viewerUserId
+    );
   }
 
   async getSession(viewerUserId: string): Promise<ViewerSession | undefined> {
@@ -102,6 +133,7 @@ export class JsonLedgerStore implements LedgerStore {
 
 export class InMemoryLedgerStore implements LedgerStore {
   private readonly processedEventIds = new Set<string>();
+  private readonly authorizations = new Map<string, ViewerAuthorization>();
   private readonly sessions = new Map<string, ViewerSession>();
 
   async hasProcessedEvent(eventId: string): Promise<boolean> {
@@ -114,6 +146,16 @@ export class InMemoryLedgerStore implements LedgerStore {
 
   async upsertSession(session: ViewerSession): Promise<void> {
     this.sessions.set(session.viewerUserId, session);
+  }
+
+  async upsertAuthorization(authorization: ViewerAuthorization): Promise<void> {
+    this.authorizations.set(authorization.viewerUserId, authorization);
+  }
+
+  async getAuthorization(
+    viewerUserId: string
+  ): Promise<ViewerAuthorization | undefined> {
+    return this.authorizations.get(viewerUserId);
   }
 
   async getSession(viewerUserId: string): Promise<ViewerSession | undefined> {
@@ -132,6 +174,7 @@ export class InMemoryLedgerStore implements LedgerStore {
   async snapshot(): Promise<LedgerSnapshot> {
     return {
       processedEventIds: [...this.processedEventIds],
+      authorizations: [...this.authorizations.values()],
       sessions: [...this.sessions.values()]
     };
   }

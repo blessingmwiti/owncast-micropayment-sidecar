@@ -45,6 +45,14 @@ export class SessionService {
       updatedAt: now
     };
 
+    const authorization = await this.store.getAuthorization(input.viewerUserId);
+    if (authorization && new Date(authorization.expiresAt).getTime() > Date.now()) {
+      session.walletAddress = authorization.walletAddress;
+      session.authorizationId = authorization.authorizationId;
+      session.spendingCapUSDC = authorization.spendingCapUSDC;
+      session.authorizationExpiresAt = authorization.expiresAt;
+    }
+
     await this.store.upsertSession(session);
     return session;
   }

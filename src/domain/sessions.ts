@@ -12,6 +12,8 @@ export interface ViewerSession {
   watchedSeconds?: number;
   walletAddress?: string;
   authorizationId?: string;
+  spendingCapUSDC?: string;
+  authorizationExpiresAt?: string;
   ratePerSecond: number;
   amountUSDC?: string;
   status: SessionStatus;
@@ -22,7 +24,17 @@ export interface ViewerSession {
 
 export interface LedgerSnapshot {
   processedEventIds: string[];
+  authorizations: ViewerAuthorization[];
   sessions: ViewerSession[];
+}
+
+export interface ViewerAuthorization {
+  viewerUserId: string;
+  walletAddress: string;
+  authorizationId: string;
+  spendingCapUSDC: string;
+  expiresAt: string;
+  createdAt: string;
 }
 
 export function computeWatchedSeconds(joinedAt: string, partedAt: string): number {

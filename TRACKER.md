@@ -59,8 +59,8 @@ This is the chronological build plan. We will mark items complete as we finish t
 - [ ] Show active stream state and current rate.
 - [ ] Connect viewer wallet.
 - [ ] Create payment authorization using Circle/x402 tooling.
-- [ ] Bind Owncast viewer/session identity to wallet authorization.
-- [ ] Enforce spending cap and authorization expiry.
+- [x] Bind Owncast viewer/session identity to wallet authorization.
+- [x] Enforce spending cap and authorization expiry.
 - [ ] Redirect or embed the Owncast stream after authorization.
 
 ## 6. Settlement Core

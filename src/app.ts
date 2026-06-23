@@ -1,6 +1,7 @@
 import express from "express";
 
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
+import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
 import {
   SessionService,
   StaticPricingPolicy
@@ -35,6 +36,7 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
+  app.use(createViewerSessionRouter(store));
   app.use(createOwncastWebhookRouter(store, sessions));
 
   return app;
