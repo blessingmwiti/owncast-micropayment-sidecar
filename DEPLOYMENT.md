@@ -16,6 +16,13 @@ For local Owncast:
 npm run owncast:up
 ```
 
+Docker image:
+
+```bash
+docker build -t owncast-payflow .
+docker run --env-file .env -p 4000:4000 owncast-payflow
+```
+
 ## Required Environment
 
 ```bash
