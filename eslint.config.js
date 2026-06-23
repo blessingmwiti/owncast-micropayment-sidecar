@@ -17,6 +17,13 @@ export default tseslint.config(
     }
   },
   {
+    files: ["public/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.browser
+    }
+  },
+  {
     ignores: ["dist/**", "node_modules/**", "coverage/**"]
   }
 );

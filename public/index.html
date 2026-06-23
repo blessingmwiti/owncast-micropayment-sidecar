@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Owncast Payflow</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Owncast Payflow</strong>
+          <span>Per-second USDC livestream access</span>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          <a href="/dashboard.html">Dashboard</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <h1>Pay for the seconds you actually watch.</h1>
+        <div class="rate" aria-live="polite">
+          <div class="metric">
+            <span>Current rate</span>
+            <strong id="rate">$0.000000/sec</strong>
+          </div>
+          <div class="metric">
+            <span>Viewer count</span>
+            <strong id="viewer-count">0</strong>
+          </div>
+          <div class="metric">
+            <span>Agent decision</span>
+            <strong id="rationale">loading</strong>
+          </div>
+        </div>
+      </section>
+
+      <div class="layout">
+        <section>
+          <div class="stream-frame">
+            <iframe
+              id="stream"
+              title="Owncast stream"
+              src="http://localhost:8080/embed/video"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="entry-title">
+          <h2 id="entry-title">Session entry</h2>
+          <form id="session-form">
+            <label>
+              Owncast viewer ID
+              <input
+                id="viewerUserId"
+                name="viewerUserId"
+                autocomplete="off"
+                required
+                placeholder="viewer-1"
+              />
+            </label>
+            <label>
+              Wallet address
+              <input
+                id="walletAddress"
+                name="walletAddress"
+                autocomplete="off"
+                required
+                placeholder="0x..."
+              />
+            </label>
+            <label>
+              Spending cap (USDC)
+              <input
+                id="spendingCapUSDC"
+                name="spendingCapUSDC"
+                inputmode="decimal"
+                required
+                value="1.00"
+              />
+            </label>
+            <button class="primary" type="submit">Approve session</button>
+            <p class="status" id="status" role="status"></p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script src="/viewer.js" type="module"></script>
+  </body>
+</html>

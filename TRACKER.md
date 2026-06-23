@@ -55,13 +55,13 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 5. Viewer Authorization Flow
 
-- [ ] Build minimal viewer entry page.
-- [ ] Show active stream state and current rate.
+- [x] Build minimal viewer entry page.
+- [x] Show active stream state and current rate.
 - [ ] Connect viewer wallet.
 - [ ] Create payment authorization using Circle/x402 tooling.
 - [x] Bind Owncast viewer/session identity to wallet authorization.
 - [x] Enforce spending cap and authorization expiry.
-- [ ] Redirect or embed the Owncast stream after authorization.
+- [x] Redirect or embed the Owncast stream after authorization.
 
 ## 6. Settlement Core
 
@@ -81,15 +81,15 @@ This is the chronological build plan. We will mark items complete as we finish t
 - [x] Log rate decisions with rationale.
 - [x] Lock each viewer session to the visible rate they accepted.
 - [ ] Add optional LLM-backed rationale after deterministic policy works.
-- [ ] Surface agent decisions in the dashboard.
+- [x] Surface agent decisions in the dashboard.
 
 ## 8. Creator Dashboard
 
-- [ ] Show stream status and viewer count.
-- [ ] Show current rate and agent rationale.
-- [ ] Show active sessions.
-- [ ] Show settled sessions and USDC totals.
-- [ ] Show failed/retryable settlements.
+- [x] Show stream status and viewer count.
+- [x] Show current rate and agent rationale.
+- [x] Show active sessions.
+- [x] Show settled sessions and USDC totals.
+- [x] Show failed/retryable settlements.
 - [ ] Show creator wallet balance if API access permits.
 
 ## 9. Demo Hardening

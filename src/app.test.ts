@@ -13,3 +13,19 @@ describe("health endpoint", () => {
     });
   });
 });
+
+describe("static app surfaces", () => {
+  it("serves the viewer entry page", async () => {
+    const response = await request(createApp()).get("/").expect(200);
+
+    expect(response.text).toContain("Owncast Payflow");
+    expect(response.text).toContain("Session entry");
+  });
+
+  it("serves the creator dashboard", async () => {
+    const response = await request(createApp()).get("/dashboard.html").expect(200);
+
+    expect(response.text).toContain("Creator dashboard");
+    expect(response.text).toContain("Settlements");
+  });
+});

@@ -10,9 +10,13 @@ const policy = {
 
 describe("PricingAgent", () => {
   it("discounts low viewership", async () => {
-    const agent = new PricingAgent(policy, async () => ({ viewerCount: 3 }));
+    const agent = new PricingAgent(policy, async () => ({
+      online: true,
+      viewerCount: 3
+    }));
 
     await expect(agent.currentDecision()).resolves.toMatchObject({
+      online: true,
       ratePerSecond: 0.0005,
       rationale: "discount: low viewership (3)",
       viewerCount: 3

@@ -1,6 +1,7 @@
 export interface RateDecision {
   ratePerSecond: number;
   rationale: string;
+  online: boolean;
   viewerCount: number;
   decidedAt: string;
 }
@@ -12,6 +13,7 @@ export interface CreatorPricingPolicy {
 }
 
 interface OwncastStatus {
+  online?: boolean;
   viewerCount?: number;
 }
 
@@ -29,12 +31,16 @@ export class PricingAgent {
   }
 
   async currentDecision(): Promise<RateDecision> {
-    const status = await this.fetchOwncastStatus().catch(() => ({ viewerCount: 0 }));
+    const status: OwncastStatus = await this.fetchOwncastStatus().catch(() => ({
+      online: false,
+      viewerCount: 0
+    }));
     const viewerCount = status.viewerCount ?? 0;
     const rawDecision = this.decide(viewerCount);
 
     return {
       ...rawDecision,
+      online: status.online ?? false,
       viewerCount,
       decidedAt: new Date().toISOString()
     };

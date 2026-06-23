@@ -1,3 +1,5 @@
+import { join } from "node:path";
+
 import express from "express";
 
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
@@ -41,6 +43,7 @@ export function createApp(options: CreateAppOptions = {}) {
   const sessions = new SessionService(store, pricingPolicy, settlements);
 
   app.use(express.json());
+  app.use(express.static(join(import.meta.dirname, "..", "public")));
 
   app.get("/health", (_req, res) => {
     res.json({
@@ -67,6 +70,7 @@ export function createApp(options: CreateAppOptions = {}) {
       res.json({
         ratePerSecond: await pricingPolicy.currentRatePerSecond(),
         rationale: "static rate",
+        online: false,
         viewerCount: 0,
         decidedAt: new Date().toISOString()
       });
