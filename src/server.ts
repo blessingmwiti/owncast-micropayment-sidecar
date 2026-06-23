@@ -23,6 +23,8 @@ const app = createApp({
   store: new JsonLedgerStore(config.LEDGER_FILE),
   pricingPolicy: pricingAgent,
   webhookSecret: config.OWNCAST_WEBHOOK_SECRET,
+  publicUrl: config.PUBLIC_URL,
+  creatorWalletAddress: config.CREATOR_WALLET_ADDRESS,
   settlementProvider:
     config.SETTLEMENT_PROVIDER === "circle-gateway"
       ? new CircleGatewaySettlementProvider({

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import express from "express";
 
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
+import { createMastodonAdapterRouter } from "./routes/mastodon-adapter.js";
 import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
 import {
   DryRunSettlementProvider,
@@ -21,6 +22,8 @@ interface CreateAppOptions {
   pricingPolicy?: PricingPolicy;
   settlementProvider?: SettlementProvider;
   webhookSecret?: string;
+  publicUrl?: string;
+  creatorWalletAddress?: string;
   ratePerSecond?: number;
 }
 
@@ -81,6 +84,13 @@ export function createApp(options: CreateAppOptions = {}) {
   });
 
   app.use(createViewerSessionRouter(store, pricingPolicy));
+  app.use(
+    createMastodonAdapterRouter({
+      publicUrl: options.publicUrl ?? "http://localhost:4000",
+      creatorWalletAddress: options.creatorWalletAddress,
+      settlements
+    })
+  );
   app.use(
     createOwncastWebhookRouter(store, sessions, {
       webhookSecret: options.webhookSecret

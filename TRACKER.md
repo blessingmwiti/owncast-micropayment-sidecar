@@ -104,10 +104,10 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 10. Stretch: Mastodon Adapter
 
-- [ ] Confirm current Mastodon donation-campaign API shape.
-- [ ] Add campaign endpoint backed by the same settlement core.
+- [x] Confirm current Mastodon donation-campaign API shape.
+- [x] Add campaign endpoint backed by the same settlement core.
 - [ ] Add donation page.
-- [ ] Settle one test donation.
+- [x] Settle one test donation.
 - [ ] Include it as a brief stretch segment in the demo only after Owncast works.
 
 ## 11. Production Follow-Through
