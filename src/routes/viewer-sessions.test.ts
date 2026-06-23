@@ -2,6 +2,7 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 
 import { createApp } from "../app.js";
+import { StaticPricingPolicy } from "../services/session-service.js";
 import { InMemoryLedgerStore } from "../store/ledger-store.js";
 
 describe("viewer session start", () => {
@@ -39,7 +40,10 @@ describe("viewer session start", () => {
 
   it("attaches a valid authorization when Owncast reports the viewer joined", async () => {
     const store = new InMemoryLedgerStore();
-    const app = createApp({ store });
+    const app = createApp({
+      store,
+      pricingPolicy: new StaticPricingPolicy(0.002)
+    });
 
     await request(app)
       .post("/session/start")
@@ -70,6 +74,7 @@ describe("viewer session start", () => {
       walletAddress: "0xviewer",
       authorizationId: "auth-1",
       spendingCapUSDC: "1.000000",
+      ratePerSecond: 0.002,
       authorizationExpiresAt: "2099-06-23T19:00:00.000Z"
     });
   });

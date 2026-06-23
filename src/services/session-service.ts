@@ -50,6 +50,7 @@ export class SessionService {
       session.walletAddress = authorization.walletAddress;
       session.authorizationId = authorization.authorizationId;
       session.spendingCapUSDC = authorization.spendingCapUSDC;
+      session.ratePerSecond = authorization.acceptedRatePerSecond;
       session.authorizationExpiresAt = authorization.expiresAt;
     }
 

@@ -75,11 +75,11 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 7. Pricing Agent
 
-- [ ] Define creator policy: base rate, min rate, max rate, surge rules.
-- [ ] Implement simple deterministic pricing policy.
-- [ ] Poll Owncast viewer count.
-- [ ] Log rate decisions with rationale.
-- [ ] Lock each viewer session to the visible rate they accepted.
+- [x] Define creator policy: base rate, min rate, max rate, surge rules.
+- [x] Implement simple deterministic pricing policy.
+- [x] Poll Owncast viewer count.
+- [x] Log rate decisions with rationale.
+- [x] Lock each viewer session to the visible rate they accepted.
 - [ ] Add optional LLM-backed rationale after deterministic policy works.
 - [ ] Surface agent decisions in the dashboard.
 

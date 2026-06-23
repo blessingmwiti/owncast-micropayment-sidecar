@@ -33,6 +33,7 @@ export interface ViewerAuthorization {
   walletAddress: string;
   authorizationId: string;
   spendingCapUSDC: string;
+  acceptedRatePerSecond: number;
   expiresAt: string;
   createdAt: string;
 }

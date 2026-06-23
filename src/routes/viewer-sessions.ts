@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 
 import { config } from "../config.js";
 import type { ViewerAuthorization } from "../domain/sessions.js";
+import type { PricingPolicy } from "../services/session-service.js";
 import type { LedgerStore } from "../store/ledger-store.js";
 
 const sessionStartSchema = z.object({
@@ -15,7 +16,10 @@ const sessionStartSchema = z.object({
   expiresAt: z.string().datetime().optional()
 });
 
-export function createViewerSessionRouter(store: LedgerStore) {
+export function createViewerSessionRouter(
+  store: LedgerStore,
+  pricingPolicy: PricingPolicy
+) {
   const router = Router();
 
   router.post("/session/start", async (req, res, next) => {
@@ -23,11 +27,13 @@ export function createViewerSessionRouter(store: LedgerStore) {
       const input = sessionStartSchema.parse(req.body);
       const expiresAt =
         input.expiresAt ?? new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      const acceptedRatePerSecond = await pricingPolicy.currentRatePerSecond();
       const authorization: ViewerAuthorization = {
         viewerUserId: input.viewerUserId,
         walletAddress: input.walletAddress,
         authorizationId: input.authorizationId ?? randomUUID(),
         spendingCapUSDC: input.spendingCapUSDC.toFixed(6),
+        acceptedRatePerSecond,
         expiresAt,
         createdAt: new Date().toISOString()
       };
@@ -38,7 +44,7 @@ export function createViewerSessionRouter(store: LedgerStore) {
         ok: true,
         viewerUserId: authorization.viewerUserId,
         authorizationId: authorization.authorizationId,
-        ratePerSecond: config.BASE_RATE_PER_SECOND,
+        ratePerSecond: authorization.acceptedRatePerSecond,
         spendingCapUSDC: authorization.spendingCapUSDC,
         expiresAt: authorization.expiresAt,
         creatorAddress: config.CREATOR_WALLET_ADDRESS ?? null
