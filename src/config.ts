@@ -15,6 +15,7 @@ const envSchema = z.object({
     .default("https://gateway-api-testnet.circle.com"),
   CREATOR_WALLET_ADDRESS: z.string().optional(),
   ARC_TESTNET_RPC: z.string().url().optional(),
+  LEDGER_FILE: z.string().default("data/ledger.json"),
   BASE_RATE_PER_SECOND: z.coerce.number().positive().default(0.001),
   MIN_RATE_PER_SECOND: z.coerce.number().positive().default(0.0005),
   MAX_RATE_PER_SECOND: z.coerce.number().positive().default(0.003)

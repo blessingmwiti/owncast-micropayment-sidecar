@@ -43,15 +43,15 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [x] Scaffold Express/TypeScript service.
 - [x] Add health endpoint.
-- [ ] Add webhook receiver.
-- [ ] Add typed event parsing and validation.
-- [ ] Add idempotency keys for webhook events.
-- [ ] Add durable session store.
-- [ ] Add session ledger model.
-- [ ] Implement `USER_JOINED` handling.
-- [ ] Implement `USER_PARTED` handling.
-- [ ] Implement `STREAM_STOPPED` open-session settlement.
-- [ ] Add tests for session duration and duplicate webhooks.
+- [x] Add webhook receiver.
+- [x] Add typed event parsing and validation.
+- [x] Add idempotency keys for webhook events.
+- [x] Add durable session store.
+- [x] Add session ledger model.
+- [x] Implement `USER_JOINED` handling.
+- [x] Implement `USER_PARTED` handling.
+- [x] Implement `STREAM_STOPPED` open-session settlement.
+- [x] Add tests for session duration and duplicate webhooks.
 
 ## 5. Viewer Authorization Flow
 
