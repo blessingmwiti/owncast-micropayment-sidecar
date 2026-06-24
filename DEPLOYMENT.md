@@ -16,6 +16,13 @@ For local Owncast:
 npm run owncast:up
 ```
 
+For the full local Docker stack:
+
+```bash
+npm run stack:up
+npm run stack:down
+```
+
 Docker image:
 
 ```bash

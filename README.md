@@ -77,6 +77,12 @@ npm run owncast:up
 npm run dev
 ```
 
+Or run the whole local stack in Docker:
+
+```bash
+npm run stack:up
+```
+
 Useful URLs:
 
 - Viewer entry: `http://localhost:4000/`
