@@ -154,3 +154,4 @@ The demo should be designed so it can harden into a real product:
 - [Owncast](https://owncast.online/)
 
 See [ROADMAP.md](./ROADMAP.md) for the post-hackathon hardening path.
+See [SUBMISSION.md](./SUBMISSION.md) for the demo recording runbook.
