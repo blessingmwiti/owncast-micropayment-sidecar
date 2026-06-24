@@ -14,6 +14,7 @@ import {
   type SettlementProvider
 } from "./services/settlement-service.js";
 import { ReconciliationService } from "./services/reconciliation-service.js";
+import { MetricsService } from "./services/metrics-service.js";
 import {
   SessionService,
   StaticPricingPolicy,
@@ -50,6 +51,7 @@ export function createApp(options: CreateAppOptions = {}) {
     options.settlementProvider ?? new DryRunSettlementProvider()
   );
   const reconciliation = new ReconciliationService(store, settlements);
+  const metrics = new MetricsService(store);
   const sessions = new SessionService(store, pricingPolicy, settlements);
   const publicDir = join(import.meta.dirname, "..", "public");
   const adminAuth = requireAdminToken(options.creatorDashboardToken);
@@ -80,6 +82,14 @@ export function createApp(options: CreateAppOptions = {}) {
   app.get("/ledger", adminAuth, async (_req, res, next) => {
     try {
       res.json(await store.snapshot());
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/metrics", adminAuth, async (_req, res, next) => {
+    try {
+      res.json(await metrics.current());
     } catch (error) {
       next(error);
     }

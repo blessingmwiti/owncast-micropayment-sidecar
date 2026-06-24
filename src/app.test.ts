@@ -64,4 +64,14 @@ describe("admin surface protection", () => {
       .set("x-payflow-admin-token", "top-secret")
       .expect(200);
   });
+
+  it("protects metrics when an admin token is configured", async () => {
+    const app = createApp({ creatorDashboardToken: "top-secret" });
+
+    await request(app).get("/metrics").expect(401);
+    await request(app)
+      .get("/metrics")
+      .set("x-payflow-admin-token", "top-secret")
+      .expect(200);
+  });
 });

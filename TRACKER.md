@@ -96,7 +96,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [ ] Run one complete local stream with one viewer wallet.
 - [ ] Run one complete stream with 2-3 real test viewers.
-- [ ] Capture metrics: sessions, wallets, USDC settled, average duration, agent decisions.
+- [x] Capture metrics: sessions, wallets, USDC settled, average duration, agent decisions.
 - [ ] Deploy sidecar to a public URL.
 - [ ] Verify webhook delivery against deployed sidecar.
 - [ ] Record a sub-3-minute demo video.

@@ -3,6 +3,9 @@ const streamStatusEl = document.querySelector("#stream-status");
 const viewerCountEl = document.querySelector("#viewer-count");
 const rationaleEl = document.querySelector("#rationale");
 const totalEl = document.querySelector("#total");
+const uniqueWalletsEl = document.querySelector("#unique-wallets");
+const settledSessionsEl = document.querySelector("#settled-sessions");
+const averageWatchEl = document.querySelector("#average-watch");
 const sessionsEl = document.querySelector("#sessions");
 const settlementsEl = document.querySelector("#settlements");
 const refreshButton = document.querySelector("#refresh");
@@ -58,14 +61,16 @@ function renderSettlements(settlements) {
 async function refresh() {
   const adminToken = window.localStorage.getItem("payflowAdminToken");
   const headers = adminToken ? { "x-payflow-admin-token": adminToken } : {};
-  const [rateResponse, ledgerResponse] = await Promise.all([
+  const [rateResponse, ledgerResponse, metricsResponse] = await Promise.all([
     fetch("/agent/rate"),
-    fetch("/ledger", { headers })
+    fetch("/ledger", { headers }),
+    fetch("/metrics", { headers })
   ]);
   const decision = await rateResponse.json();
   const ledger = await ledgerResponse.json();
+  const metrics = await metricsResponse.json();
 
-  if (!ledgerResponse.ok) {
+  if (!ledgerResponse.ok || !metricsResponse.ok) {
     rationaleEl.textContent = ledger.error ?? "Unable to load dashboard ledger";
     return;
   }
@@ -78,6 +83,9 @@ async function refresh() {
   viewerCountEl.textContent = String(decision.viewerCount ?? 0);
   rationaleEl.textContent = decision.rationale ?? "static rate";
   totalEl.textContent = `$${total.toFixed(6)}`;
+  uniqueWalletsEl.textContent = String(metrics.uniqueWallets ?? 0);
+  settledSessionsEl.textContent = String(metrics.settledSessions ?? 0);
+  averageWatchEl.textContent = `${metrics.averageWatchedSeconds ?? 0}s`;
   renderSessions(ledger.sessions ?? []);
   renderSettlements(ledger.settlements ?? []);
 }
