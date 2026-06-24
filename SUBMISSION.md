@@ -10,6 +10,8 @@ Start the stack:
 npm run stack:up
 ```
 
+Docker Desktop must be running before this command.
+
 Open:
 
 - Viewer: `http://localhost:4000/`
