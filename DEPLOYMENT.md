@@ -16,6 +16,13 @@ For local Owncast:
 npm run owncast:up
 ```
 
+For the full local Docker stack:
+
+```bash
+npm run stack:up
+npm run stack:down
+```
+
 Docker image:
 
 ```bash
@@ -29,7 +36,9 @@ docker run --env-file .env -p 4000:4000 owncast-payflow
 NODE_ENV=production
 PORT=4000
 PUBLIC_URL=https://payflow.example.com
-LEDGER_FILE=data/ledger.json
+CREATOR_DASHBOARD_TOKEN=choose-a-dashboard-token
+LEDGER_DRIVER=sqlite
+SQLITE_FILE=data/payflow.sqlite
 
 OWNCAST_URL=https://stream.example.com
 OWNCAST_WEBHOOK_SECRET=choose-a-shared-secret
@@ -82,7 +91,7 @@ If `OWNCAST_WEBHOOK_SECRET` is set, include the same value in the `x-payflow-web
 
 ## Current Production Gaps
 
-- Replace the JSON ledger with a database before real users.
+- Use `LEDGER_DRIVER=sqlite` before real users.
 - Add authentication to the creator dashboard.
 - Complete real wallet connection and x402 signing in the viewer page.
 - Reconcile failed live Circle settlements.

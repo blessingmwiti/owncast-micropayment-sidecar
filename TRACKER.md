@@ -96,7 +96,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [ ] Run one complete local stream with one viewer wallet.
 - [ ] Run one complete stream with 2-3 real test viewers.
-- [ ] Capture metrics: sessions, wallets, USDC settled, average duration, agent decisions.
+- [x] Capture metrics: sessions, wallets, USDC settled, average duration, agent decisions.
 - [ ] Deploy sidecar to a public URL.
 - [ ] Verify webhook delivery against deployed sidecar.
 - [ ] Record a sub-3-minute demo video.
@@ -106,16 +106,16 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [x] Confirm current Mastodon donation-campaign API shape.
 - [x] Add campaign endpoint backed by the same settlement core.
-- [ ] Add donation page.
+- [x] Add donation page.
 - [x] Settle one test donation.
 - [ ] Include it as a brief stretch segment in the demo only after Owncast works.
 
 ## 11. Production Follow-Through
 
-- [ ] Replace demo storage with production database migrations.
-- [ ] Add authentication for creator dashboard.
-- [ ] Add observability: structured logs, metrics, error reporting.
-- [ ] Add rate-limit and abuse protections.
-- [ ] Add reconciliation job for unsettled sessions.
+- [x] Replace demo storage with production database migrations.
+- [x] Add authentication for creator dashboard.
+- [x] Add observability: structured logs, metrics, error reporting.
+- [x] Add rate-limit and abuse protections.
+- [x] Add reconciliation job for unsettled sessions.
 - [x] Add deployment documentation.
-- [ ] Write post-hackathon roadmap.
+- [x] Write post-hackathon roadmap.

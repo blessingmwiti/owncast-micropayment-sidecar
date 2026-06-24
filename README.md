@@ -77,6 +77,12 @@ npm run owncast:up
 npm run dev
 ```
 
+Or run the whole local stack in Docker:
+
+```bash
+npm run stack:up
+```
+
 Useful URLs:
 
 - Viewer entry: `http://localhost:4000/`
@@ -146,3 +152,6 @@ The demo should be designed so it can harden into a real product:
 - [Circle x402 batching SDK](https://developers.circle.com/gateway/nanopayments/references/sdk)
 - [Arc docs](https://docs.arc.network)
 - [Owncast](https://owncast.online/)
+
+See [ROADMAP.md](./ROADMAP.md) for the post-hackathon hardening path.
+See [SUBMISSION.md](./SUBMISSION.md) for the demo recording runbook.

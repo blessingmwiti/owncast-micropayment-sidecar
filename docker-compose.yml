@@ -1,4 +1,24 @@
 services:
+  payflow:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      PUBLIC_URL: http://localhost:4000
+      OWNCAST_URL: http://owncast:8080
+      LEDGER_DRIVER: sqlite
+      SQLITE_FILE: /app/data/payflow.sqlite
+      SETTLEMENT_PROVIDER: dry-run
+      BASE_RATE_PER_SECOND: "0.001"
+      MIN_RATE_PER_SECOND: "0.0005"
+      MAX_RATE_PER_SECOND: "0.003"
+    volumes:
+      - payflow-data:/app/data
+    depends_on:
+      - owncast
+
   owncast:
     image: owncast/owncast:latest
     ports:
@@ -8,4 +28,5 @@ services:
       - owncast-data:/app/data
 
 volumes:
+  payflow-data:
   owncast-data:

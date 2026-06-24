@@ -2,6 +2,10 @@ import { join } from "node:path";
 
 import express from "express";
 
+import { requireAdminToken } from "./middleware/admin-auth.js";
+import { createRateLimiter } from "./middleware/rate-limit.js";
+import { logError, requestLogger } from "./middleware/request-logging.js";
+import { createAdminRouter } from "./routes/admin.js";
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
 import { createMastodonAdapterRouter } from "./routes/mastodon-adapter.js";
 import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
@@ -10,6 +14,8 @@ import {
   SettlementService,
   type SettlementProvider
 } from "./services/settlement-service.js";
+import { ReconciliationService } from "./services/reconciliation-service.js";
+import { MetricsService } from "./services/metrics-service.js";
 import {
   SessionService,
   StaticPricingPolicy,
@@ -24,6 +30,7 @@ interface CreateAppOptions {
   webhookSecret?: string;
   publicUrl?: string;
   creatorWalletAddress?: string;
+  creatorDashboardToken?: string;
   ratePerSecond?: number;
 }
 
@@ -44,10 +51,28 @@ export function createApp(options: CreateAppOptions = {}) {
     store,
     options.settlementProvider ?? new DryRunSettlementProvider()
   );
+  const reconciliation = new ReconciliationService(store, settlements);
+  const metrics = new MetricsService(store);
   const sessions = new SessionService(store, pricingPolicy, settlements);
+  const publicDir = join(import.meta.dirname, "..", "public");
+  const adminAuth = requireAdminToken(options.creatorDashboardToken);
+  const publicMutationLimiter = createRateLimiter({
+    maxRequests: 60,
+    windowMs: 60_000
+  });
 
   app.use(express.json());
-  app.use(express.static(join(import.meta.dirname, "..", "public")));
+  app.use(requestLogger());
+
+  app.get("/", (_req, res) => {
+    res.sendFile(join(publicDir, "index.html"));
+  });
+
+  app.get("/dashboard.html", adminAuth, (_req, res) => {
+    res.sendFile(join(publicDir, "dashboard.html"));
+  });
+
+  app.use(express.static(publicDir, { index: false }));
 
   app.get("/health", (_req, res) => {
     res.json({
@@ -56,9 +81,17 @@ export function createApp(options: CreateAppOptions = {}) {
     });
   });
 
-  app.get("/ledger", async (_req, res, next) => {
+  app.get("/ledger", adminAuth, async (_req, res, next) => {
     try {
       res.json(await store.snapshot());
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/metrics", adminAuth, async (_req, res, next) => {
+    try {
+      res.json(await metrics.current());
     } catch (error) {
       next(error);
     }
@@ -83,6 +116,15 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
+  app.use("/session", publicMutationLimiter);
+  app.use("/donate", publicMutationLimiter);
+
+  app.use(
+    createAdminRouter({
+      adminToken: options.creatorDashboardToken,
+      reconciliation
+    })
+  );
   app.use(createViewerSessionRouter(store, pricingPolicy));
   app.use(
     createMastodonAdapterRouter({
@@ -105,7 +147,7 @@ export function createApp(options: CreateAppOptions = {}) {
       next: express.NextFunction
     ) => {
       void next;
-      console.error(error);
+      logError(error, res.getHeader("x-request-id")?.toString());
       res.status(500).json({
         ok: false,
         error: "internal_server_error"

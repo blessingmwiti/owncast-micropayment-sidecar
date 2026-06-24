@@ -1,5 +1,7 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 
 import type {
   LedgerSnapshot,
@@ -18,6 +20,148 @@ export interface LedgerStore {
   getSession(viewerUserId: string): Promise<ViewerSession | undefined>;
   listOpenSessions(streamId?: string): Promise<ViewerSession[]>;
   snapshot(): Promise<LedgerSnapshot>;
+}
+
+interface SqliteRow {
+  value: string;
+}
+
+function sqliteRows(rows: unknown): SqliteRow[] {
+  return rows as SqliteRow[];
+}
+
+export class SqliteLedgerStore implements LedgerStore {
+  private readonly db: DatabaseSync;
+
+  constructor(private readonly filePath: string) {
+    if (filePath !== ":memory:") {
+      mkdirSync(dirname(filePath), { recursive: true });
+    }
+
+    this.db = new DatabaseSync(filePath);
+    this.migrate();
+  }
+
+  async hasProcessedEvent(eventId: string): Promise<boolean> {
+    const row = this.db
+      .prepare("select event_id from processed_events where event_id = ?")
+      .get(eventId);
+
+    return Boolean(row);
+  }
+
+  async markProcessedEvent(eventId: string): Promise<void> {
+    this.db
+      .prepare("insert or ignore into processed_events (event_id) values (?)")
+      .run(eventId);
+  }
+
+  async upsertAuthorization(authorization: ViewerAuthorization): Promise<void> {
+    this.db
+      .prepare(
+        `insert into authorizations (viewer_user_id, value)
+         values (?, ?)
+         on conflict(viewer_user_id) do update set value = excluded.value`
+      )
+      .run(authorization.viewerUserId, JSON.stringify(authorization));
+  }
+
+  async getAuthorization(
+    viewerUserId: string
+  ): Promise<ViewerAuthorization | undefined> {
+    const row = this.db
+      .prepare("select value from authorizations where viewer_user_id = ?")
+      .get(viewerUserId) as SqliteRow | undefined;
+
+    return row ? (JSON.parse(row.value) as ViewerAuthorization) : undefined;
+  }
+
+  async appendSettlement(settlement: SettlementRecord): Promise<void> {
+    this.db
+      .prepare("insert into settlements (id, value) values (?, ?)")
+      .run(settlement.id, JSON.stringify(settlement));
+  }
+
+  async upsertSession(session: ViewerSession): Promise<void> {
+    this.db
+      .prepare(
+        `insert into sessions (viewer_user_id, value)
+         values (?, ?)
+         on conflict(viewer_user_id) do update set value = excluded.value`
+      )
+      .run(session.viewerUserId, JSON.stringify(session));
+  }
+
+  async getSession(viewerUserId: string): Promise<ViewerSession | undefined> {
+    const row = this.db
+      .prepare("select value from sessions where viewer_user_id = ?")
+      .get(viewerUserId) as SqliteRow | undefined;
+
+    return row ? (JSON.parse(row.value) as ViewerSession) : undefined;
+  }
+
+  async listOpenSessions(streamId?: string): Promise<ViewerSession[]> {
+    const snapshot = await this.snapshot();
+    return snapshot.sessions.filter((session) => {
+      const isOpen = !session.settled && session.status !== "settled";
+      const matchesStream = streamId ? session.streamId === streamId : true;
+
+      return isOpen && matchesStream;
+    });
+  }
+
+  async snapshot(): Promise<LedgerSnapshot> {
+    const processedEventRows = sqliteRows(
+      this.db
+        .prepare("select event_id as value from processed_events order by created_at")
+        .all()
+    );
+    const authorizationRows = sqliteRows(this.db
+      .prepare("select value from authorizations order by viewer_user_id")
+      .all());
+    const settlementRows = sqliteRows(this.db
+      .prepare("select value from settlements order by created_at")
+      .all());
+    const sessionRows = sqliteRows(this.db
+      .prepare("select value from sessions order by viewer_user_id")
+      .all());
+
+    return {
+      processedEventIds: processedEventRows.map((row) => row.value),
+      authorizations: authorizationRows.map(
+        (row) => JSON.parse(row.value) as ViewerAuthorization
+      ),
+      settlements: settlementRows.map(
+        (row) => JSON.parse(row.value) as SettlementRecord
+      ),
+      sessions: sessionRows.map((row) => JSON.parse(row.value) as ViewerSession)
+    };
+  }
+
+  private migrate(): void {
+    this.db.exec(`
+      create table if not exists processed_events (
+        event_id text primary key,
+        created_at text not null default current_timestamp
+      );
+
+      create table if not exists authorizations (
+        viewer_user_id text primary key,
+        value text not null
+      );
+
+      create table if not exists sessions (
+        viewer_user_id text primary key,
+        value text not null
+      );
+
+      create table if not exists settlements (
+        id text primary key,
+        value text not null,
+        created_at text not null default current_timestamp
+      );
+    `);
+  }
 }
 
 const emptySnapshot = (): LedgerSnapshot => ({
