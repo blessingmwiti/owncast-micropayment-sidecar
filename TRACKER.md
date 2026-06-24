@@ -114,7 +114,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [ ] Replace demo storage with production database migrations.
 - [x] Add authentication for creator dashboard.
-- [ ] Add observability: structured logs, metrics, error reporting.
+- [x] Add observability: structured logs, metrics, error reporting.
 - [x] Add rate-limit and abuse protections.
 - [x] Add reconciliation job for unsettled sessions.
 - [x] Add deployment documentation.

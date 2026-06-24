@@ -12,6 +12,14 @@ describe("health endpoint", () => {
       service: "owncast-payflow"
     });
   });
+
+  it("returns a request id header", async () => {
+    await request(createApp())
+      .get("/health")
+      .set("x-request-id", "test-request-id")
+      .expect("x-request-id", "test-request-id")
+      .expect(200);
+  });
 });
 
 describe("static app surfaces", () => {

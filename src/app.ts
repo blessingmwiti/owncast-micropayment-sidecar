@@ -4,6 +4,7 @@ import express from "express";
 
 import { requireAdminToken } from "./middleware/admin-auth.js";
 import { createRateLimiter } from "./middleware/rate-limit.js";
+import { logError, requestLogger } from "./middleware/request-logging.js";
 import { createAdminRouter } from "./routes/admin.js";
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
 import { createMastodonAdapterRouter } from "./routes/mastodon-adapter.js";
@@ -61,6 +62,7 @@ export function createApp(options: CreateAppOptions = {}) {
   });
 
   app.use(express.json());
+  app.use(requestLogger());
 
   app.get("/", (_req, res) => {
     res.sendFile(join(publicDir, "index.html"));
@@ -145,7 +147,7 @@ export function createApp(options: CreateAppOptions = {}) {
       next: express.NextFunction
     ) => {
       void next;
-      console.error(error);
+      logError(error, res.getHeader("x-request-id")?.toString());
       res.status(500).json({
         ok: false,
         error: "internal_server_error"
