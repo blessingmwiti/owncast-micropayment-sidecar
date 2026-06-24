@@ -146,3 +146,5 @@ The demo should be designed so it can harden into a real product:
 - [Circle x402 batching SDK](https://developers.circle.com/gateway/nanopayments/references/sdk)
 - [Arc docs](https://docs.arc.network)
 - [Owncast](https://owncast.online/)
+
+See [ROADMAP.md](./ROADMAP.md) for the post-hackathon hardening path.

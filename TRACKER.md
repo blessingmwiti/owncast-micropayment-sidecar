@@ -118,4 +118,4 @@ This is the chronological build plan. We will mark items complete as we finish t
 - [x] Add rate-limit and abuse protections.
 - [x] Add reconciliation job for unsettled sessions.
 - [x] Add deployment documentation.
-- [ ] Write post-hackathon roadmap.
+- [x] Write post-hackathon roadmap.
