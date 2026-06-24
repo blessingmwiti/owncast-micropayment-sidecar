@@ -8,7 +8,7 @@ import {
   CircleGatewaySettlementProvider,
   DryRunSettlementProvider
 } from "./services/settlement-service.js";
-import { JsonLedgerStore } from "./store/ledger-store.js";
+import { JsonLedgerStore, SqliteLedgerStore } from "./store/ledger-store.js";
 
 const pricingAgent = new PricingAgent(
   {
@@ -20,7 +20,10 @@ const pricingAgent = new PricingAgent(
 );
 
 const app = createApp({
-  store: new JsonLedgerStore(config.LEDGER_FILE),
+  store:
+    config.LEDGER_DRIVER === "sqlite"
+      ? new SqliteLedgerStore(config.SQLITE_FILE)
+      : new JsonLedgerStore(config.LEDGER_FILE),
   pricingPolicy: pricingAgent,
   webhookSecret: config.OWNCAST_WEBHOOK_SECRET,
   publicUrl: config.PUBLIC_URL,

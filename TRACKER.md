@@ -112,7 +112,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 ## 11. Production Follow-Through
 
-- [ ] Replace demo storage with production database migrations.
+- [x] Replace demo storage with production database migrations.
 - [x] Add authentication for creator dashboard.
 - [x] Add observability: structured logs, metrics, error reporting.
 - [x] Add rate-limit and abuse protections.
