@@ -54,4 +54,14 @@ describe("admin surface protection", () => {
     await request(app).get("/dashboard.html").expect(200);
     await request(app).get("/ledger").expect(200);
   });
+
+  it("protects reconciliation when an admin token is configured", async () => {
+    const app = createApp({ creatorDashboardToken: "top-secret" });
+
+    await request(app).post("/admin/reconcile").expect(401);
+    await request(app)
+      .post("/admin/reconcile")
+      .set("x-payflow-admin-token", "top-secret")
+      .expect(200);
+  });
 });

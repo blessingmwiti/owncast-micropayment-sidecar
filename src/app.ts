@@ -4,6 +4,7 @@ import express from "express";
 
 import { requireAdminToken } from "./middleware/admin-auth.js";
 import { createRateLimiter } from "./middleware/rate-limit.js";
+import { createAdminRouter } from "./routes/admin.js";
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
 import { createMastodonAdapterRouter } from "./routes/mastodon-adapter.js";
 import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
@@ -12,6 +13,7 @@ import {
   SettlementService,
   type SettlementProvider
 } from "./services/settlement-service.js";
+import { ReconciliationService } from "./services/reconciliation-service.js";
 import {
   SessionService,
   StaticPricingPolicy,
@@ -47,6 +49,7 @@ export function createApp(options: CreateAppOptions = {}) {
     store,
     options.settlementProvider ?? new DryRunSettlementProvider()
   );
+  const reconciliation = new ReconciliationService(store, settlements);
   const sessions = new SessionService(store, pricingPolicy, settlements);
   const publicDir = join(import.meta.dirname, "..", "public");
   const adminAuth = requireAdminToken(options.creatorDashboardToken);
@@ -104,6 +107,12 @@ export function createApp(options: CreateAppOptions = {}) {
   app.use("/session", publicMutationLimiter);
   app.use("/donate", publicMutationLimiter);
 
+  app.use(
+    createAdminRouter({
+      adminToken: options.creatorDashboardToken,
+      reconciliation
+    })
+  );
   app.use(createViewerSessionRouter(store, pricingPolicy));
   app.use(
     createMastodonAdapterRouter({

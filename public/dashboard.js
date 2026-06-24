@@ -6,6 +6,8 @@ const totalEl = document.querySelector("#total");
 const sessionsEl = document.querySelector("#sessions");
 const settlementsEl = document.querySelector("#settlements");
 const refreshButton = document.querySelector("#refresh");
+const reconcileButton = document.querySelector("#reconcile");
+const adminStatusEl = document.querySelector("#admin-status");
 const query = new URLSearchParams(window.location.search);
 const queryToken = query.get("token");
 
@@ -80,7 +82,28 @@ async function refresh() {
   renderSettlements(ledger.settlements ?? []);
 }
 
+async function reconcile() {
+  const adminToken = window.localStorage.getItem("payflowAdminToken");
+  const headers = adminToken ? { "x-payflow-admin-token": adminToken } : {};
+  adminStatusEl.textContent = "Reconciling...";
+
+  const response = await fetch("/admin/reconcile", {
+    method: "POST",
+    headers
+  });
+  const body = await response.json();
+
+  if (!response.ok) {
+    adminStatusEl.textContent = body.error ?? "Reconciliation failed";
+    return;
+  }
+
+  adminStatusEl.textContent = `Attempted ${body.result.attempted}, settled ${body.result.settled}, failed ${body.result.failed}`;
+  await refresh();
+}
+
 refreshButton.addEventListener("click", refresh);
+reconcileButton.addEventListener("click", reconcile);
 
 await refresh();
 setInterval(refresh, 10_000);
