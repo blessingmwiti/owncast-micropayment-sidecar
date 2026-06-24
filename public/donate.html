@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payflow Donation</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Payflow donation</strong>
+          <span>Campaign support through the shared settlement core</span>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          <a href="/">Viewer</a>
+          <a href="/dashboard.html">Dashboard</a>
+        </nav>
+      </header>
+
+      <div class="layout">
+        <section class="panel">
+          <h1 style="font-size: 2rem">Support this creator directly.</h1>
+          <p class="muted">
+            This page uses the same settlement path as metered Owncast viewing.
+          </p>
+          <div class="rate">
+            <div class="metric">
+              <span>Campaign</span>
+              <strong id="campaign">loading</strong>
+            </div>
+            <div class="metric">
+              <span>Currency</span>
+              <strong id="currency">USDC</strong>
+            </div>
+            <div class="metric">
+              <span>Goal</span>
+              <strong id="goal">$0.00</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="donate-title">
+          <h2 id="donate-title">Donation</h2>
+          <form id="donation-form">
+            <label>
+              Donor ID
+              <input
+                id="viewerUserId"
+                name="viewerUserId"
+                autocomplete="off"
+                required
+                value="mastodon-donor"
+              />
+            </label>
+            <label>
+              Wallet address
+              <input
+                id="walletAddress"
+                name="walletAddress"
+                autocomplete="off"
+                required
+                placeholder="0x..."
+              />
+            </label>
+            <label>
+              Amount (USDC)
+              <input
+                id="amountUSDC"
+                name="amountUSDC"
+                inputmode="decimal"
+                required
+                value="2.50"
+              />
+            </label>
+            <button class="primary" type="submit">Donate</button>
+            <p class="status" id="status" role="status"></p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script src="/donate.js" type="module"></script>
+  </body>
+</html>

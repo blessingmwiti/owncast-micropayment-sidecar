@@ -28,6 +28,13 @@ describe("static app surfaces", () => {
     expect(response.text).toContain("Creator dashboard");
     expect(response.text).toContain("Settlements");
   });
+
+  it("serves the donation page", async () => {
+    const response = await request(createApp()).get("/donate.html").expect(200);
+
+    expect(response.text).toContain("Payflow donation");
+    expect(response.text).toContain("Donation");
+  });
 });
 
 describe("admin surface protection", () => {

@@ -106,7 +106,7 @@ This is the chronological build plan. We will mark items complete as we finish t
 
 - [x] Confirm current Mastodon donation-campaign API shape.
 - [x] Add campaign endpoint backed by the same settlement core.
-- [ ] Add donation page.
+- [x] Add donation page.
 - [x] Settle one test donation.
 - [ ] Include it as a brief stretch segment in the demo only after Owncast works.
 
