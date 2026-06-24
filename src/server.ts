@@ -25,6 +25,7 @@ const app = createApp({
   webhookSecret: config.OWNCAST_WEBHOOK_SECRET,
   publicUrl: config.PUBLIC_URL,
   creatorWalletAddress: config.CREATOR_WALLET_ADDRESS,
+  creatorDashboardToken: config.CREATOR_DASHBOARD_TOKEN,
   settlementProvider:
     config.SETTLEMENT_PROVIDER === "circle-gateway"
       ? new CircleGatewaySettlementProvider({

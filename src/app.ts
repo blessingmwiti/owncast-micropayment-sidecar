@@ -2,6 +2,8 @@ import { join } from "node:path";
 
 import express from "express";
 
+import { requireAdminToken } from "./middleware/admin-auth.js";
+import { createRateLimiter } from "./middleware/rate-limit.js";
 import { createOwncastWebhookRouter } from "./routes/owncast-webhooks.js";
 import { createMastodonAdapterRouter } from "./routes/mastodon-adapter.js";
 import { createViewerSessionRouter } from "./routes/viewer-sessions.js";
@@ -24,6 +26,7 @@ interface CreateAppOptions {
   webhookSecret?: string;
   publicUrl?: string;
   creatorWalletAddress?: string;
+  creatorDashboardToken?: string;
   ratePerSecond?: number;
 }
 
@@ -45,9 +48,24 @@ export function createApp(options: CreateAppOptions = {}) {
     options.settlementProvider ?? new DryRunSettlementProvider()
   );
   const sessions = new SessionService(store, pricingPolicy, settlements);
+  const publicDir = join(import.meta.dirname, "..", "public");
+  const adminAuth = requireAdminToken(options.creatorDashboardToken);
+  const publicMutationLimiter = createRateLimiter({
+    maxRequests: 60,
+    windowMs: 60_000
+  });
 
   app.use(express.json());
-  app.use(express.static(join(import.meta.dirname, "..", "public")));
+
+  app.get("/", (_req, res) => {
+    res.sendFile(join(publicDir, "index.html"));
+  });
+
+  app.get("/dashboard.html", adminAuth, (_req, res) => {
+    res.sendFile(join(publicDir, "dashboard.html"));
+  });
+
+  app.use(express.static(publicDir, { index: false }));
 
   app.get("/health", (_req, res) => {
     res.json({
@@ -56,7 +74,7 @@ export function createApp(options: CreateAppOptions = {}) {
     });
   });
 
-  app.get("/ledger", async (_req, res, next) => {
+  app.get("/ledger", adminAuth, async (_req, res, next) => {
     try {
       res.json(await store.snapshot());
     } catch (error) {
@@ -82,6 +100,9 @@ export function createApp(options: CreateAppOptions = {}) {
       next(error);
     }
   });
+
+  app.use("/session", publicMutationLimiter);
+  app.use("/donate", publicMutationLimiter);
 
   app.use(createViewerSessionRouter(store, pricingPolicy));
   app.use(

@@ -29,3 +29,29 @@ describe("static app surfaces", () => {
     expect(response.text).toContain("Settlements");
   });
 });
+
+describe("admin surface protection", () => {
+  it("protects the dashboard and ledger when an admin token is configured", async () => {
+    const app = createApp({ creatorDashboardToken: "top-secret" });
+
+    await request(app).get("/dashboard.html").expect(401);
+    await request(app).get("/ledger").expect(401);
+
+    await request(app)
+      .get("/dashboard.html?token=top-secret")
+      .expect("set-cookie", /payflow_admin_token=top-secret/)
+      .expect(200);
+
+    await request(app)
+      .get("/ledger")
+      .set("x-payflow-admin-token", "top-secret")
+      .expect(200);
+  });
+
+  it("leaves dashboard and ledger open for local demos when no token is configured", async () => {
+    const app = createApp();
+
+    await request(app).get("/dashboard.html").expect(200);
+    await request(app).get("/ledger").expect(200);
+  });
+});

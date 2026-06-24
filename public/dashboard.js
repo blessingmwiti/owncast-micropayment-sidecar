@@ -6,6 +6,13 @@ const totalEl = document.querySelector("#total");
 const sessionsEl = document.querySelector("#sessions");
 const settlementsEl = document.querySelector("#settlements");
 const refreshButton = document.querySelector("#refresh");
+const query = new URLSearchParams(window.location.search);
+const queryToken = query.get("token");
+
+if (queryToken) {
+  window.localStorage.setItem("payflowAdminToken", queryToken);
+  window.history.replaceState({}, "", window.location.pathname);
+}
 
 function cell(value) {
   const td = document.createElement("td");
@@ -47,12 +54,19 @@ function renderSettlements(settlements) {
 }
 
 async function refresh() {
+  const adminToken = window.localStorage.getItem("payflowAdminToken");
+  const headers = adminToken ? { "x-payflow-admin-token": adminToken } : {};
   const [rateResponse, ledgerResponse] = await Promise.all([
     fetch("/agent/rate"),
-    fetch("/ledger")
+    fetch("/ledger", { headers })
   ]);
   const decision = await rateResponse.json();
   const ledger = await ledgerResponse.json();
+
+  if (!ledgerResponse.ok) {
+    rationaleEl.textContent = ledger.error ?? "Unable to load dashboard ledger";
+    return;
+  }
   const total = ledger.settlements
     .filter((settlement) => settlement.status === "settled")
     .reduce((sum, settlement) => sum + Number(settlement.amountUSDC), 0);

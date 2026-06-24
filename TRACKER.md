@@ -113,9 +113,9 @@ This is the chronological build plan. We will mark items complete as we finish t
 ## 11. Production Follow-Through
 
 - [ ] Replace demo storage with production database migrations.
-- [ ] Add authentication for creator dashboard.
+- [x] Add authentication for creator dashboard.
 - [ ] Add observability: structured logs, metrics, error reporting.
-- [ ] Add rate-limit and abuse protections.
+- [x] Add rate-limit and abuse protections.
 - [ ] Add reconciliation job for unsettled sessions.
 - [x] Add deployment documentation.
 - [ ] Write post-hackathon roadmap.

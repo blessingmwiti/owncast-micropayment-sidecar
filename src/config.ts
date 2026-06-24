@@ -7,6 +7,7 @@ const envSchema = z.object({
     .default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
   PUBLIC_URL: z.string().url().default("http://localhost:4000"),
+  CREATOR_DASHBOARD_TOKEN: z.string().optional(),
   OWNCAST_URL: z.string().url().default("http://localhost:8080"),
   OWNCAST_WEBHOOK_SECRET: z.string().optional(),
   CIRCLE_API_KEY: z.string().optional(),

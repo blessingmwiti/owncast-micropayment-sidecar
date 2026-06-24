@@ -29,6 +29,7 @@ docker run --env-file .env -p 4000:4000 owncast-payflow
 NODE_ENV=production
 PORT=4000
 PUBLIC_URL=https://payflow.example.com
+CREATOR_DASHBOARD_TOKEN=choose-a-dashboard-token
 LEDGER_FILE=data/ledger.json
 
 OWNCAST_URL=https://stream.example.com
